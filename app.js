@@ -48,10 +48,10 @@ app.use('',
     }).unknown(true),
   }),
   auth);
-app.use('', article);
-app.use('', user);
+app.use(article);
+app.use(user);
 app.use(errorLogger);
 app.use(errors());
-app.use('', resourseError);
-app.use('', errorProcessor);
+app.use(resourseError);
+app.use(errorProcessor);
 module.exports = { app };

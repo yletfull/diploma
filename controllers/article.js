@@ -1,5 +1,4 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-undef */
+
 const path = require('path');
 
 const article = require(path.join(__dirname, '../models/article'));
