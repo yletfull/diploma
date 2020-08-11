@@ -8,10 +8,10 @@ const { celebrate, Joi, errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const auth = require('./middlewares/auth');
 const { register, login } = require('./controllers/user');
-const article = require('./routes/article');
-const user = require('./routes/user');
 
-const { resourseError, timeLog, errorProcessor } = require('./routes/helpers.js');
+const { article, user } = require('./routes/index');
+
+const { resourseError, errorProcessor } = require('./routes/helpers.js');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -23,7 +23,6 @@ const app = express();
 app.use(helmet());
 app.use(limiter);
 app.use(express.json());
-app.use('', timeLog);
 app.use(requestLogger);
 app.post('/signin', celebrate({
   body: Joi.object().keys({
