@@ -1,23 +1,20 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-param-reassign */
-const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const { NotFoundError } = require(path.join(__dirname, '../errors/NotFoundError'));
-const { BadRequest } = require(path.join(__dirname, '../errors/BadRequest'));
+const { NotFoundError } = require('../errors/NotFoundError');
+const { BadRequest } = require('../errors/BadRequest');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const user = require(path.join(__dirname, '../models/user'));
+const users = require('../models/user');
 
 const getUser = (req, res, next) => {
-  user.findById(req.user._id)
+  users.findById(req.user._id)
     .then((user) => {
       if (user) {
         res.status(200).send({ user });
       } else {
-        err = new NotFoundError(`Пользователя с id:'${req.user._id}' не существует`);
+        const err = new NotFoundError(`Пользователя с id:'${req.user._id}' не существует`);
         next(err);
       }
     })
@@ -25,8 +22,9 @@ const getUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequest('Некорректный id'));
       }
-      err.statusCode = 500;
-      next(err);
+      const error = err;
+      error.statusCode = 500;
+      return next(error);
     });
 };
 const register = (req, res, next) => {
@@ -35,7 +33,7 @@ const register = (req, res, next) => {
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => {
-      user.create({
+      users.create({
         name, email, password: hash,
       })
         .then(() => res.status(200).send({
@@ -43,34 +41,39 @@ const register = (req, res, next) => {
         }))
         .catch((err) => {
           if (err.name === 'ValidationError') {
-            err.statusCode = 400;
-            return next(err);
+            const error = err;
+            error.statusCode = 400;
+            return next(error);
           }
           if (err.name === 'MongoError' && err.code === 11000) {
-            err = new Error('Email уже используется');
-            err.statusCode = 409;
-            return next(err);
+            let error = err;
+            error = new Error('Email уже используется');
+            error.statusCode = 409;
+            return next(error);
           }
-          err.statusCode = 500;
-          next(err);
+          const error = err;
+          error.statusCode = 500;
+          return next(error);
         });
     })
     .catch((err) => {
-      err.statusCode = 400;
-      next(err);
+      const error = err;
+      error.statusCode = 400;
+      next(error);
     });
 };
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  user.findUserByCredentials(email, password)
+  users.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
       res.status(200).send({ token });
     })
     .catch((err) => {
-      err.statusCode = 401;
-      next(err);
+      const error = err;
+      error.statusCode = 401;
+      next(error);
     });
 };
 

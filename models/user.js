@@ -27,8 +27,7 @@ const userSchema = new mongoose.Schema({
   },
 }, { versionKey: false });
 
-// eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function fn(email, password) {
   if (password) {
     return this.findOne({ email }).select('+password')
       .then((user) => {

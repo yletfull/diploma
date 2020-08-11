@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
-const path = require('path');
 
 const { PORT = 3000 } = process.env;
-const { app } = require(path.join(__dirname, './app'));
+const { app } = require('./app');
 
 const mongooseConnection = () => {
   const servUrl = 'mongodb://localhost:27017/mestodb';

@@ -1,20 +1,17 @@
 require('dotenv').config();
-const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
 
 const rateLimit = require('express-rate-limit');
 const { celebrate, Joi, errors } = require('celebrate');
 
-const { requestLogger, errorLogger } = require(path.join(__dirname, './middlewares/logger'));
-const auth = require(path.join(__dirname, './middlewares/auth'));
-const { register, login } = require(path.join(__dirname, './controllers/user'));
-const article = require(path.join(__dirname, './routes/article'));
-const user = require(path.join(__dirname, './routes/user'));
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const auth = require('./middlewares/auth');
+const { register, login } = require('./controllers/user');
+const article = require('./routes/article');
+const user = require('./routes/user');
 
-const {
-  resourseError, timeLog, errorProcessor,
-} = require(path.join(__dirname, '/routes/helpers.js'));
+const { resourseError, timeLog, errorProcessor } = require('./routes/helpers.js');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-const path = require('path');
 
-const { NotFoundError } = require(path.join(__dirname, '../errors/NotFoundError'));
-// eslint-disable-next-line no-unused-vars
+const { NotFoundError } = require('../errors/NotFoundError');
+
 const errorProcessor = (err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  return res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка сервера' : message });
+  res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка сервера' : message });
+  next(err);
 };
 
 const resourseError = (req, res, next) => {

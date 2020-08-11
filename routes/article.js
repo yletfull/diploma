@@ -1,12 +1,11 @@
 const router = require('express').Router();
-const path = require('path');
 const { celebrate, Joi } = require('celebrate');
 
 const {
   getArticles,
   addArticle,
   removeArticle,
-} = require(path.join(__dirname, '../controllers/article'));
+} = require('../controllers/article');
 
 router.get('/articles', getArticles);
 
@@ -17,8 +16,8 @@ router.post('/articles',
       title: Joi.string().required().min(2).max(30),
       text: Joi.string().required().min(2).max(30),
       source: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/),
-      image: Joi.string().required().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/),
+      link: Joi.string().required().pattern(/^(?:http(s)?:\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/),
+      image: Joi.string().required().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/),
       date: Joi.string().isoDate(),
     }),
   }),
