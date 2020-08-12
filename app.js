@@ -46,8 +46,8 @@ app.use('',
   auth);
 app.use(article);
 app.use(user);
-app.use(errorLogger);
 app.use(errors());
 app.use(resourseError);
 app.use(errorProcessor);
+app.use(errorLogger);
 module.exports = { app };
