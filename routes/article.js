@@ -13,23 +13,23 @@ router.get('/articles', getArticles);
 router.post('/articles',
   celebrate({
     body: Joi.object().keys({
-      keyword: Joi.string().required().min(2).max(30),
-      title: Joi.string().required().min(2).max(30),
-      text: Joi.string().required().min(2).max(30),
+      keyword: Joi.string().required().min(1).max(15),
+      title: Joi.string().required().min(2),
+      description: Joi.string().required().min(2),
       source: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().custom((value, helpers) => {
+      url: Joi.string().required().custom((value, helpers) => {
         if (validator.isURL(value)) {
           return value;
         }
         return helpers.message('Некорректная ссылка');
       }),
-      image: Joi.string().required().custom((value, helpers) => {
+      urlToImage: Joi.string().required().custom((value, helpers) => {
         if (validator.isURL(value)) {
           return value;
         }
         return helpers.message('Некорректная ссылка на изображение');
       }),
-      date: Joi.string().isoDate(),
+      publishedAt: Joi.string().isoDate(),
     }),
   }),
   addArticle);

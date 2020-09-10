@@ -5,7 +5,7 @@ const { NoAccess } = require('../errors/NoAccess');
 const { BadRequest } = require('../errors/BadRequest');
 
 const getArticles = (req, res, next) => {
-  articles.find({})
+  articles.find({ owner: req.user._id })
     .populate('owner')
     .then((article) => res.status(200).send(article))
     .catch((err) => {
@@ -17,11 +17,11 @@ const getArticles = (req, res, next) => {
 
 const addArticle = (req, res, next) => {
   const {
-    keyword, title, text, source, link, image,
+    keyword, title, description, source, url, urlToImage, publishedAt,
   } = req.body;
   const owner = req.user._id;
   articles.create({
-    keyword, title, text, source, link, image, owner,
+    keyword, title, description, source, url, urlToImage, publishedAt, owner,
   })
     .then((article) => res.status(200).send({ article }))
     .catch((err) => {
