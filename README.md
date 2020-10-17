@@ -41,7 +41,7 @@ V 1.0.0
 - Проект выложен на облачный сервер;
 - Реализована поддержка https протокола;
 ## 4. Установка  
-`git clone https://github.com/yletfull/news-explorer-api news-explorer-api`
+`git clone https://github.com/yletfull/news-explorer-api news-explorer-api`  
 `npm install`
 
 ## 5. Подключенные библиотеки
