@@ -1,20 +1,29 @@
 require('dotenv').config();
-const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
+
+const cors = require('cors');
+const whitelist = ['http://localhost:8080', 'http://diploma.gq'];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
 const rateLimit = require('express-rate-limit');
 const { celebrate, Joi, errors } = require('celebrate');
 
-const { requestLogger, errorLogger } = require(path.join(__dirname, './middlewares/logger'));
-const auth = require(path.join(__dirname, './middlewares/auth'));
-const { register, login } = require(path.join(__dirname, './controllers/user'));
-const article = require(path.join(__dirname, './routes/article'));
-const user = require(path.join(__dirname, './routes/user'));
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const auth = require('./middlewares/auth');
+const { register, login } = require('./controllers/user');
 
-const {
-  resourseError, timeLog, errorProcessor,
-} = require(path.join(__dirname, '/routes/helpers.js'));
+const { article, user } = require('./routes/index');
+
+const { resourseError, errorProcessor } = require('./routes/helpers.js');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -25,8 +34,8 @@ const app = express();
 
 app.use(helmet());
 app.use(limiter);
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use('', timeLog);
 app.use(requestLogger);
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -48,10 +57,10 @@ app.use('',
     }).unknown(true),
   }),
   auth);
-app.use('', article);
-app.use('', user);
-app.use(errorLogger);
+app.use(article);
+app.use(user);
 app.use(errors());
-app.use('', resourseError);
-app.use('', errorProcessor);
+app.use(resourseError);
+app.use(errorProcessor);
+app.use(errorLogger);
 module.exports = { app };
