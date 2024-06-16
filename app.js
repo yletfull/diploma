@@ -4,7 +4,7 @@ const helmet = require('helmet');
 
 const cors = require('cors');
 const BASE_URL = process.env.REACT_APP_BASE_URL;
-const whitelist = [BASE_URL];
+const whitelist = [BASE_URL, 'http://107.172.142.144', 'http://107.172.142.144/', 'http://107.172.142.144:80'];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
