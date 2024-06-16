@@ -1,38 +1,34 @@
 # Stage 1: Build Stage
-# Используем официальный образ Node.js на базе Ubuntu для сборки проекта
-FROM node:14 AS build
+# Use the official Node.js image based on Alpine for a smaller image size
+FROM node:14-alpine AS build
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Set working directory inside the container
 WORKDIR /app
 
-# Копируем package.json и package-lock.json (если есть)
+# Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Устанавливаем зависимости
-RUN npm install
+# Install dependencies
+RUN npm install --production=false
 
-# Копируем весь остальной исходный код в рабочую директорию
+# Copy the rest of the application code
 COPY . .
 
-# Собираем проект
-RUN npm run build
-
 # Stage 2: Production Stage
-# Используем официальный образ Node.js на базе Alpine для запуска приложения
+# Use a smaller Node.js image for production
 FROM node:14-alpine
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Set working directory inside the container
 WORKDIR /app
 
-# Копируем только необходимые файлы из предыдущего build stage
-COPY --from=build /app/package.json ./
-COPY --from=build /app/dist ./dist
+# Copy only necessary files from the build stage
+COPY --from=build /app .
 
-# Устанавливаем production зависимости
+# Install production dependencies
 RUN npm install --only=production
 
-# Открываем порт 3000 для доступа к приложению (если ваше приложение слушает на этом порту)
+# Expose port 3000 (or other if your app uses a different port)
 EXPOSE 3000
 
-# Запускаем приложение
-CMD ["node", "dist/index.js"]
+# Command to run the application
+CMD ["node", "server.js"]
