@@ -3,7 +3,8 @@ const express = require('express');
 const helmet = require('helmet');
 
 const cors = require('cors');
-const whitelist = ['http://localhost:8080', 'http://diploma.gq'];
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+const whitelist = [BASE_URL];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
