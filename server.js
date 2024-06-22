@@ -14,7 +14,7 @@ const mongooseConnection = () => {
     useFindAndModify: false,
   });
   mongoose.connection.on('connected', () => {
-    console.log(`Succesfully connected to MongoDB Database "${servUrl}"`);
+    console.log(`Succesfully connected to MongoDB Database "${servUrl}: ${PORT}"`);
   });
   mongoose.connection.on('error', (err) => {
     console.error(`Database "${servUrl}" Connection error: ${err}`);

@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -36,14 +35,14 @@ app.use(express.json());
 app.use(requestLogger);
 
 // Маршруты для аутентификации
-app.post('/api/signin', celebrate({
+app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 }), login);
 
-app.post('/api/signup', celebrate({
+app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
@@ -53,8 +52,8 @@ app.post('/api/signup', celebrate({
 
 // Защищенные маршруты
 app.use(auth);
-app.use('/api', article);
-app.use('/api', user);
+app.use(article);
+app.use(user);
 
 app.use(errors());
 app.use(resourseError);

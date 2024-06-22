@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #terrain {
+      display: flex;
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .block {
+      flex-grow: 1;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+<div id="terrain"></div>
+
+<script>
+  const terrainWidth = 20; // Ширина terrain (количество блоков)
+  const terrainHeight = 20; // Ширина terrain (количество блоков)
+  const colors = ['rgb(26,57,194)', 'rgb(107,107,107)', 'rgb(210, 194, 12)', 'rgb(65, 203, 59)']
+  const DEFAULT_COLOR_DELTA = 100;
+  const DEFAULT_REGIONS_COUNT = 5;
+  const DEFAULT_REGION_RADIUS = 5;
+
+  function colorValidation(value) {
+    if(value >= 255) {
+      return 255;
+    } else if(value >= 0 && value < 255) {
+      return value
+    } else if(value <= 0 && value > -255) {
+      return value
+    } else if(value <= -255) {
+      return -255
+    }
+  }
+
+  function mixColors (color1, color2) {
+    const match1 = color1?.match(/(\d+), (\d+), (\d+)/);
+    let red1 = parseInt(match1?.[1], 10) || Math.floor(Math.random() * 255);
+    let green1 = parseInt(match1?.[2], 10) || Math.floor(Math.random() * 255);
+    let blue1 = parseInt(match1?.[3], 10) || Math.floor(Math.random() * 255);
+
+    const match2 = color2?.match(/(\d+), (\d+), (\d+)/);
+    let red2 = parseInt(match2?.[1], 10) || Math.floor(Math.random() * 255);
+    let green2 = parseInt(match2?.[2], 10) || Math.floor(Math.random() * 255);
+    let blue2 = parseInt(match2?.[3], 10) || Math.floor(Math.random() * 255);
+
+
+    let newRed = (red1 + red2) / 2;
+    let newGreen = (green1 + green2) / 2;
+    let newBlue = (blue1 + blue2) / 2;
+
+    const newColor = `rgb(${newRed},${newGreen},${newBlue})`;
+    return newColor;
+  }
+
+  function getSimilarColor (color, colorDelta = DEFAULT_COLOR_DELTA) {
+    const match = color?.match(/(\d+), (\d+), (\d+)/);
+    let red = parseInt(match?.[1], 10) || Math.floor(Math.random() * 255);
+    let green = parseInt(match?.[2], 10) || Math.floor(Math.random() * 255);
+    let blue = parseInt(match?.[3], 10) || Math.floor(Math.random() * 255);
+
+    const isIncrease = Math.random() < 0.5;
+
+    let newRed = colorValidation(isIncrease ? red + colorDelta : red - colorDelta);
+    let newGreen = colorValidation(isIncrease ? green + colorDelta : green - colorDelta);
+    let newBlue = colorValidation(isIncrease ? blue + colorDelta : blue - colorDelta);
+
+    const newColor = `rgb(${newRed},${newGreen},${newBlue})`;
+    return newColor;
+  }
+
+  function generateRandomColor() {
+    const randomColor = colors[Math.floor(Math.random() * colors?.length)];
+    const newColor = getSimilarColor(randomColor);
+    return newColor;
+  }
+
+  let colorsRowsMap = [];
+  function generateTerrain() {
+    const terrain = document.getElementById('terrain');
+
+    for (let columnIndex = 0; columnIndex < terrainWidth; columnIndex++) {
+      const row = document.createElement('div');
+      row.style.width = '100vw';
+      row.style.height = `calc(100vh / ${terrainHeight})`;
+      terrain.appendChild(row);
+
+      for(let rowIndex = 0; rowIndex < terrainHeight; rowIndex++) {
+        const generatedColor = generateRandomColor();
+        const block = document.createElement('div');
+        colorsRowsMap[`${rowIndex}_${columnIndex}`] = generatedColor;
+
+        block.className = 'block';
+        block.style.backgroundColor = generatedColor;
+        block.textContent = `${columnIndex}, ${rowIndex}`;
+        block.style.height = `calc(100vh / ${terrainHeight})`
+        block.style.width = `calc(100vw / ${terrainWidth})`
+        block.dataset.rowIndex = rowIndex;
+        block.dataset.columnIndex = columnIndex;
+
+        row.appendChild(block);
+      }
+    }
+
+    const regionsCount = Math.floor(Math.random() * DEFAULT_REGIONS_COUNT)
+    for(let region = 0; region <= regionsCount; region++) {
+      const regionCenterColumn = Math.floor(Math.random() * terrainHeight);
+      const regionCenterRow = Math.floor(Math.random() * terrainWidth);
+      const regionRadius = Math.floor(Math.random() * DEFAULT_REGION_RADIUS);
+
+      let regionColor = null;
+
+      for(let regionColumn = regionCenterColumn - regionRadius; regionColumn < (regionCenterColumn + regionRadius); regionColumn++) {
+        for(let regionRow = regionCenterRow - regionRadius; regionRow < (regionCenterRow + regionRadius); regionRow++) {
+          const block = document.querySelector(`[data-row-index="${regionRow}"][data-column-index="${regionColumn}"]`);
+          const color = block.style.backgroundColor;
+          regionColor = regionColor ? regionColor : color;
+          block.style.backgroundColor = regionColor;
+        }
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    generateTerrain();
+  });
+</script>
+</body>
+</html>
